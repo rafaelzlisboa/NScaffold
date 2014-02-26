@@ -27,11 +27,13 @@ Get-ChildItem $libsRoot -Filter *.ps1 -Recurse |
 
 
 $featuresFolder = "$root\deploy-$type"
-if (-not (Test-Path "$featuresFolder\default.ns.ps1")) {
-    throw "Deploy [$type] is not supported. "
+
+$defaultFeatureScript = Get-FeatureScript "default" $featuresFolder
+if (-not $defaultFeatureScript) {
+    throw "There's no default script for deploying [$type]. "
 }
 . PS-Require "$featuresFolder\functions"
-$defaultFeature = & "$featuresFolder\default.ns.ps1" $packageRoot $installArgs
+$defaultFeature = & $defaultFeatureScript $packageRoot $installArgs
 
 $packageInfo = $defaultFeature.packageInfo
 
@@ -52,11 +54,7 @@ if($applyConfig){
 
 $installClosure = Make-Closure $defaultFeature.installAction $config, $packageInfo, $installArgs
 foreach ($feature in $features){
-    if(Test-Path "$featuresFolder\$feature.ps1"){
-        $featureScript = "$featuresFolder\$feature.ps1"
-    } elseif(Test-Path "$featuresFolder\$feature.ns.ps1") {
-        $featureScript = "$featuresFolder\$feature.ns.ps1"
-    }
+    $featureScript = Get-FeatureScript $feature $featuresFolder
     if($featureScript){
         $installClosure = Make-Closure { 
             param($scriptFile, $c)
