@@ -6,7 +6,7 @@ Function Test-ServiceStatus($name, $status) {
         }
         else {
             $true
-        }       
+        }
     } else {
         $false  
     }   

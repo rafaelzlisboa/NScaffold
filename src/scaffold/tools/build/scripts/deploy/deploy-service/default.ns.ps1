@@ -9,8 +9,6 @@ $packageInfo.Add("sourcePath", $sourcePath)
     'packageInfo' = $packageInfo
     'installAction' = {
         param($config, $packageInfo, $installArgs)
-        $retryCount = 60
-        $retryIntervalInSec = 10
         $sourcePath = $packageInfo.sourcePath
         $executablePath = $installArgs.executablePath
         $name = $config.ServiceName
@@ -18,16 +16,7 @@ $packageInfo.Add("sourcePath", $sourcePath)
         $username = $config.UserName
         $password = $config.Password
 
-        for($i = 0; $i -lt $retryCount; $i++){
-            if(Test-ServiceStatus $name "Running"){
-                Write-Host "Service[$name] is running. Start to stop it." 
-                Stop-Service $name
-                Sleep $retryIntervalInSec
-            }            
-        }
-        if(Test-ServiceStatus $name "Running"){
-            throw "Not able to stop service $name"
-        }
+        Stop-ServiceForcibly($name)
 
         if (Test-Path $installPath) {
             Remove-Item $installPath -Force -Recurse
@@ -37,8 +26,9 @@ $packageInfo.Add("sourcePath", $sourcePath)
         Copy-Item $sourcePath $installPath -Recurse
         
         $serviceBinPath = "$installPath\$executablePath"
-        if(-not(Test-ServiceStatus $name)){
-            Write-Host "Create Service[$name] for $serviceBinPath"             
+        $service = Get-Service -Name $name -ErrorAction SilentlyContinue
+        if(-not $service){
+            Write-Host "Create Service[$name] for $serviceBinPath"
             if(($username) -and ($password)) {
                 $secpasswd = ConvertTo-SecureString "$password" -AsPlainText -Force
                 $credential = New-Object System.Management.Automation.PSCredential ("$username", $secpasswd)
@@ -55,7 +45,7 @@ $packageInfo.Add("sourcePath", $sourcePath)
 
         Start-Service -Name $name
 
-        if(-not (Test-ServiceStatus $name "Running")){
+        if(-not ((Get-Service -Name $name).Status -eq "Running")){
             throw "Service[$name] is NOT running after installation."
         }
         Write-Host "Service started. " -f green
