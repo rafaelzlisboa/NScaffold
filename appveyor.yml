@@ -1,4 +1,4 @@
 build: off
 
 test_script:
-  - ps: run_test.ps1
+  - ps: .\run_test.ps1
