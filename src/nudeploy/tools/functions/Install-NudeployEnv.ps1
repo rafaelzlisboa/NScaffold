@@ -101,7 +101,7 @@ Function Deploy-Env($envConfig, $dryRun) {
             $tobeDeployApps | %{ Save-LastDeploymentResult $envConfig.deploymentHistoryFolder $_ $_.exports }
         }
     }
-    $envConfig.apps
+    , $envConfig.apps
 }
 Function Deploy-App ($appConfig, $envConfig, $dryRun) {
     Log-Progress "Start Deploy-App $($appConfig.package) in $($appConfig.server)"
