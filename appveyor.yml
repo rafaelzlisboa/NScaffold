@@ -1,3 +1,6 @@
+install:
+  - winrm quickconfig -q
+
 build: off
 
 test_script:
