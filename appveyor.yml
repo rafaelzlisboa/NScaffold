@@ -1,3 +1,6 @@
+services:
+  - iis
+
 install:
   - winrm quickconfig -q
 
