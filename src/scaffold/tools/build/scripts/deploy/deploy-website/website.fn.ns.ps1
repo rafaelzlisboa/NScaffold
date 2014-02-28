@@ -72,7 +72,7 @@ Function Trace-Progress($msg, $block, $ignoreTrackProgress=7) {
 
 Function Get-UrlForSite($websiteName, $subPath){
     $webSitePath = "IIS:\Sites\$websiteName"
-    $firstBinding = $(Get-ItemProperty $webSitePath).Bindings.Collection[0]
+    $firstBinding = (Get-ItemProperty $webSitePath).Bindings.Collection[0]
     $protocol = $firstBinding.protocol
     $bindingInformation = $firstBinding.bindingInformation
     $ip, $port, $hostName = $bindingInformation -split ':'
@@ -94,7 +94,4 @@ Function Get-PhysicalPathForSite($websiteName, $subPath){
     }
     $physicalPath = [System.Environment]::ExpandEnvironmentVariables($physicalPath)
     "$physicalPath\$subPath"
-}
-Function Test-SiteExisted($websiteName){
-    Test-Path "IIS:\Sites\$websiteName"
 }

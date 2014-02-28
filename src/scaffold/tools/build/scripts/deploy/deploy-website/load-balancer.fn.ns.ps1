@@ -5,7 +5,7 @@ Function Get-ReadyPagePath ($websiteName){
     Get-PhysicalPathForSite $websiteName "\ready.txt"
 }
 Function Remove-FromLoadBalancer($websiteName) {
-    if(Test-SiteExisted $websiteName){
+    if(Test-Path "IIS:\Sites\$websiteName"){
         Trace-Progress "Remove-FromLoadBalancer for site $websiteName" {
             $readyPagePath = Get-ReadyPagePath $websiteName
             Remove-Item $readyPagePath
@@ -14,7 +14,7 @@ Function Remove-FromLoadBalancer($websiteName) {
 }
 Function Add-ToLoadBalancer($websiteName) {
     Trace-Progress "Add-ToLoadBalancer for site $websiteName" {
-        if(-not(Test-SiteExisted $websiteName)){
+        if(-not(Test-Path "IIS:\Sites\$websiteName")){
             throw "Site doesn't exist $websiteName"
         }
         $readyPagePath = Get-ReadyPagePath $websiteName
@@ -25,7 +25,7 @@ Function Add-ToLoadBalancer($websiteName) {
 }
 Function Test-SuspendedFromLoadBalancer($websiteName){
     Trace-Progress "Test-SuspendedFromLoadBalancer for site [$websiteName]" {
-        if(-not(Test-SiteExisted $websiteName)) { return $true; }
+        if(-not(Test-Path "IIS:\Sites\$websiteName")) { return $true; }
         $readyPageUrl = Get-UrlForSite $websiteName "/ready.txt"
         -not (Test-UrlExisted $readyPageUrl)
     }
