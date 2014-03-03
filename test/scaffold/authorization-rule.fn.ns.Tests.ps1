@@ -14,21 +14,19 @@ try{
 
 Describe "Check IfUserExists" {
 	It "should throw exception when users not exist." {
-        iex "net user testUser /add" | out-null
         iex "net user testUser1 /add" | out-null
         {Check-IfUserExists "$env:UserDomain\testUser3, $env:UserDomain\testUser1"} |
             should throw
-        iex "net user testUser /delete" | out-null
         iex "net user testUser1 /delete" | out-null
         
     }
 
     It "should success when users all exist." {
-        iex "net user testUser /add" | out-null
+        iex "net user testUser2 /add" | out-null
         iex "net user testUser1 /add" | out-null
-        {Check-IfUserExists "$env:UserDomain\testUser, $env:UserDomain\testUser1"} |
+        {Check-IfUserExists "$env:UserDomain\testUser2, $env:UserDomain\testUser1"} |
             should not throw
-        iex "net user testUser /delete" | out-null
+        iex "net user testUser2 /delete" | out-null
         iex "net user testUser1 /delete" | out-null
     }
 }
