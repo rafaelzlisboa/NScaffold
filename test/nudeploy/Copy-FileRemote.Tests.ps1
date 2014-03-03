@@ -6,34 +6,25 @@ Describe "Copy-FileRemote" {
     It "should copy a file to a remote non-existed folder" {
         $source = "$here\Copy-FileRemote.Tests.ps1"
         $randomNumber = [System.DateTime]::Now.Ticks
-        $not_existed_folder = "$env:temp\not\existe\f$randomNumber"
+        $not_existed_folder = "$TestDrive\not\existe\f$randomNumber"
         $dest = "$not_existed_folder\1.dat"
 
-        if(Test-Path $not_existed_folder) {
-            throw "not_existed_folder existed"
-        }
+        $not_existed_folder | should not exist
 
         Copy-FileRemote "localhost" $source $dest
-
-        if(-not(Test-Path $dest)) {
-            throw "file not copied"
-        }
+        $dest | should exist
     }
     
     It "should copy a file by overwrite existing file" {
         $source = "$here\Copy-FileRemote.Tests.ps1"
         $randomNumber = [System.DateTime]::Now.Ticks
-        $dest = "$env:temp\Copy-FileRemote-target.dat"
+        $dest = "$TestDrive\Copy-FileRemote-target.dat"
         Set-Content -Value 1 $dest
 
         Copy-FileRemote "localhost" $source $dest
+        $dest | should exist
 
-        if(-not(Test-Path $dest)) {
-            throw "file not copied"
-        }
-        if((Get-Item $dest).length -eq 1){
-            throw "file is not overwritten"
-        }
+        (Get-Item $dest).length | should not be 1
     }
 }
 

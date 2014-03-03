@@ -7,15 +7,20 @@ trap {
 }
 
 $nuget = "$rootDir\tools\nuget\nuget.exe"
-iex "$nuget install pester -version 1.0.7-alpha-0 -nocache -OutputDirectory $rootDir\tools"
-$pesterDir = "$rootDir\tools\Pester.1.0.7-alpha-0"
-
-#iex "$nuget install pester -version 1.1.0 -nocache -OutputDirectory $rootDir\tools"
-#$pesterDir = "$rootDir\tools\Pester.1.1.0"
+& $nuget install pester -version "2.0.3" -nocache -OutputDirectory "$rootDir\tools"
+$pesterDir = "$rootDir\tools\Pester.2.0.3"
 
 $pester = (Get-ChildItem "$pesterDir" pester.psm1 -recurse).FullName
 $Error.clear()
-& Powershell -noprofile -NonInteractive -command "Import-Module $pester; Invoke-Pester '$pathPatten' -EnableExit"
+
+$fixturesDir = "$rootDir\test\test-fixtures"
+
+& Powershell -noprofile -NonInteractive -command {
+    param($pester, $pathPatten, $fixturesDir)
+    Import-Module $pester
+    Invoke-Pester $pathPatten -EnableExit
+} -args $pester, $pathPatten, $fixturesDir
+
 if ($LASTEXITCODE -ne 0) {
     throw "Job run powershell test failed."
 }

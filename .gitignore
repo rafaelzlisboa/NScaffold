@@ -2,3 +2,5 @@
 /tools
 !/tools/nuget
 *.nupkg
+
+/test/test-fixtures/**/applied-app-configs

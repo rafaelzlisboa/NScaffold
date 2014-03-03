@@ -3,6 +3,7 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 @{
 	nugetRepo = "$TestDrive\nugetRepo"
 	nodeDeployRoot = "$TestDrive\deployment_root"
+	deploymentHistoryFolder = "$TestDrive\deployment_history"
 	variables = @{
 		ENV = "int"
 		PWD ="password"

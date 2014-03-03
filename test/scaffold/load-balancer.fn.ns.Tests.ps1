@@ -27,7 +27,7 @@ Describe "Get-UrlForSite" {
         write-host "after2" -f cyan
         $url = Get-UrlForSite $siteName $testFileName
         
-        $url.should.be("http://localhost:$port$testFileName")
+        $url | should be "http://localhost:$port$testFileName"
         Cleanup $siteName
     }
 
@@ -37,7 +37,7 @@ Describe "Get-UrlForSite" {
         New-Website -Name $siteName -IPAddress $ip -port $port -PhysicalPath $siteDir -force
         $url = Get-UrlForSite $siteName $testFileName
         
-        $url.should.be("http://$($ip):$port$testFileName")
+        $url | should be "http://$($ip):$port$testFileName"
         Cleanup $siteName
     }
 
@@ -49,7 +49,7 @@ Describe "Get-UrlForSite" {
 
         $url = Get-UrlForSite $siteName $testFileName
         
-        $url.should.be("http://$($hostHeader):$port$testFileName")
+        $url| should be "http://$($hostHeader):$port$testFileName"
         Cleanup $siteName
     }
 }
@@ -65,7 +65,7 @@ Describe "Get-PhysicalPathForSite" {
 
         $url = Get-PhysicalPathForSite $siteName $testFileName
         
-        $url.should.be("$siteDir\$testFileName")
+        $url | should be "$siteDir\$testFileName"
         Cleanup $siteName
     }
 }
@@ -79,9 +79,9 @@ Describe "Remove-FromLoadBalancer" {
     Cleanup $siteName
     New-Website -Name $siteName -port 1002 -PhysicalPath $siteDir -force
     It "should delete ready.txt from the site's folder" {
-        (Test-Path $readyFilePath).should.be($true)
+        $readyFilePath | should exist
         Remove-FromLoadBalancer $siteName
-        (Test-Path $readyFilePath).should.be($false)
+        $readyFilePath | should not exist
     }
     Cleanup $siteName
 }
@@ -94,9 +94,9 @@ Describe "Add-ToLoadBalancer" {
     Cleanup $siteName
     New-Website -Name $siteName -port 1003 -PhysicalPath $siteDir -force
     It "should delete ready.txt from the site's folder" {
-        (Test-Path $readyFilePath).should.be($false)
+        $readyFilePath | should not exist
         Add-ToLoadBalancer $siteName
-        (Test-Path $readyFilePath).should.be($true)
+        $readyFilePath | should exist
     }
     Cleanup $siteName
 }
@@ -113,13 +113,12 @@ Describe "Test-SuspendedFromLoadBalancer" {
 
         Remove-FromLoadBalancer $siteName
         $suspended = Test-SuspendedFromLoadBalancer $siteName
-        $suspended.should.be($true)
+        Test-SuspendedFromLoadBalancer $siteName | should be $true
     }
     Cleanup $siteName
 
     It "should return true when there's no site" {
-        $suspended = Test-SuspendedFromLoadBalancer "non-exist-site"
-        $suspended.should.be($true)
+        Test-SuspendedFromLoadBalancer "non-exist-site" | should be $true
     }
 }
 

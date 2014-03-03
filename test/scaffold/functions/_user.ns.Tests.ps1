@@ -19,6 +19,6 @@ Describe "New-LocalUser" {
         New-LocalUser -userName "TestUser" -password "special123$"
         
         $user = $computer.children.Find("TestUser", "user")
-        $user.InvokeGet("PasswordExpired").Should.Be(0)
+        $user.InvokeGet("PasswordExpired") | Should Be 0
     }
 }

@@ -13,25 +13,6 @@ function Get-UNCPath($path){
     }
 }
 
-Function Assert-Throws([ScriptBlock] $scriptBlock){
-    try{
-        & $scriptBlock    
-    }
-    catch {
-        return
-    }
-    throw "No exception throw, assertion failed. "
-}
-
-Function Assert-NotThrow([ScriptBlock] $scriptBlock){
-    try{
-        & $scriptBlock    
-    }
-    catch {
-        throw  "Exception $_ throws, assertion failed. "
-    }
-}
-
 
 Describe "Test-WebsiteMatch" {
     $testSiteName = "TestWebsiteMatchSite"
@@ -51,19 +32,19 @@ Describe "Test-WebsiteMatch" {
 
     It "should continues if website matches with the artifact version" {
         InWebSite {
-            Assert-NotThrow {& $testScript @{
+            {& $testScript @{
                 siteName= $testSiteName
                 healthCheckPath = "/health.txt?check=all"
             } @{
                 packageId = "MyPackageApi"
                 version = "1.0.123.0"
-            } -installAction {}}            
+            } -installAction {}} | should not throw
 
         }
     }
     It "should throw if website does NOT match with the artifact version" {
         InWebSite {
-            Assert-Throws {
+            {
                 & $testScript @{
                     siteName= $testSiteName
                     healthCheckPath = "/health.txt?check=all"
@@ -71,7 +52,7 @@ Describe "Test-WebsiteMatch" {
                     packageId = "MyPackageApi"
                     version = "1.0.123.1"
                 } -installAction {} 
-            }
+            } | should throw
         }        
     }
 
@@ -84,7 +65,7 @@ Status=Success
 "@        
         Set-Content "$physicalPath\tmp.txt" $content
         InWebSite {
-            Assert-NotThrow {
+            {
                 & $testScript @{
                     siteName= $testSiteName
                     healthCheckPath = "/tmp.txt?check=all"
@@ -92,7 +73,7 @@ Status=Success
                     packageId = "packageId"
                     version = "1.0.0.3603931"
                 } -installAction {} 
-            }
+            } | should not throw
 
         }
     }
@@ -104,7 +85,7 @@ ServerName=DEV-107
 Status=Success
 "@ | Set-Content "$physicalPath\tmp.txt"
         InWebSite {
-            Assert-Throws {
+            {
                 & $testScript @{
                     siteName= $testSiteName
                     healthCheckPath = "/tmp.txt?check=all"
@@ -112,7 +93,7 @@ Status=Success
                     packageId = "packageId"
                     version = "1.0.0.3603931"
                 } -installAction {} 
-            }
+            } | should throw
 
         }
     }
@@ -126,7 +107,7 @@ Status=Success
 DB=Failure
 "@ | Set-Content "$physicalPath\tmp.txt"
         InWebSite {
-            Assert-NotThrow {
+            {
                 & $testScript @{
                     siteName= $testSiteName
                     healthCheckPath = "/tmp.txt?check=all"
@@ -134,7 +115,7 @@ DB=Failure
                     packageId = "packageId"
                     version = "1.0.0.3603931"
                 } -installAction {} 
-            }
+            } | should not throw
 
         }
     }
@@ -148,7 +129,7 @@ Status=Success
 DB=Success
 "@ | Set-Content "$physicalPath\tmp.txt"
         InWebSite {
-            Assert-NotThrow {
+            {
                 & $testScript @{
                     siteName= $testSiteName
                     healthCheckPath = "/tmp.txt?check=all"
@@ -156,7 +137,7 @@ DB=Success
                     packageId = "packageId"
                     version = "1.0.0.3603931"
                 } -installAction {} 
-            }
+            } | should not throw
 
         }
     }

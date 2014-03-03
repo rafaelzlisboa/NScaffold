@@ -14,15 +14,15 @@ Describe "Get-DeployNodes.Tests" {
 
     It "should get deploy nodes for single project." {
         $nodes = Get-DeployNodes "$projectDir\src" "Single.Project"
-        $nodes.id.should.be("Single.Project");
-        $nodes.project.should.exist()
+        $nodes.id | should be "Single.Project"
+        $nodes.project | should exist
     }
 
     It "should get deploy nodes for multi project." {
         $nodes = Get-DeployNodes "$projectDir\src" "Multi.Project"
-        $nodes.id.should.be("Multi.Project");
-        $nodes.project.Count.should.be(2)
-        $nodes.project[0].should.exist()
-        $nodes.project[1].should.exist()
+        $nodes.id | should be "Multi.Project"
+        $nodes.project.Count | should be 2
+        $nodes.project[0] | should exist
+        $nodes.project[1] | should exist
     }
 }

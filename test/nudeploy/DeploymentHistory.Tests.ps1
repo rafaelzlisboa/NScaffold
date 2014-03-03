@@ -30,18 +30,14 @@ Describe "Load-LastMatchingDeploymentResult" {
         $appConfig2.config = New-TempFile @{k2 = 2; k1 = ' v1 ';}
         $historyResult = Load-LastMatchingDeploymentResult $historyRoot $appConfig2
 
-        $historyResult.keys.should.be(@('a'))
-        $historyResult.a.should.be($result.a)
+        $historyResult.keys | should be @('a')
+        $historyResult.a | should be $result.a
     }
 
     It "should return empty given there's no deployment before" {
         Clear-AllDeploymentHistory($historyRoot)
-
         $historyResult = Load-LastMatchingDeploymentResult $historyRoot $appConfig
-
-        if($historyResult) {
-            throw "Expect no history result.but got $historyResult"
-        }
+        $historyResult | should be $null
     }
 
     Function Assert-LoadNoHistoryFor($key, $value){
@@ -54,9 +50,7 @@ Describe "Load-LastMatchingDeploymentResult" {
         $appConfig2[$key] = $value
 
         $historyResult = Load-LastMatchingDeploymentResult $historyRoot $appConfig2
-        if($historyResult) {
-            throw "Expect no history result.but got $historyResult"
-        }
+        $historyResult | should be $null
     }
 
     It "should return no history when this deployment does NOT have the same env as last one" {
@@ -90,8 +84,6 @@ Describe "Load-LastMatchingDeploymentResult" {
         Save-LastDeploymentResult $historyRoot $appConfig2 @{a = "new"}
 
         $historyResult = Load-LastMatchingDeploymentResult $historyRoot $appConfig
-        if($historyResult) {
-            throw "Expect no history result.but got $historyResult"
-        }
+        $historyResult | should be $null
     }    
 }

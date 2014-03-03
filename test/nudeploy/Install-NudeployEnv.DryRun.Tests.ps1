@@ -1,67 +1,45 @@
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
-. "$here\Install-NudeployEnv.Tests.util.ps1"
+$root = "$here\..\.."
+. "$root\src-libs\functions\Install-NuPackage.ns.ps1"
 
 Describe "Install-NudeployEnv with DryRun" {
 
-    $envConfigFile = "$fixtures\config\env.config.ps1"
+    $nugetRepo = "$TestDrive\nugetRepo"
+    New-Item $nugetRepo -type Directory -Force
+    $workingDir = "$TestDrive\workingDir"
+    $nuget = "$root\tools\nuget\NuGet.exe"
 
-    Function Assert-GeneratedConfigFile($deploymentConfigFile){
-        $deploymentConfigFile.should.exist()
-        $config = Import-Config $deploymentConfigFile
-        $config.Count.should.be(9)
-        $config.DatabaseName.should.be("MyPackage-int")
-        $config.AppPoolPassword.should.be("password")
-        $config.DataSource.should.be("localhost")
-        $config.WebsiteName.should.be("MyService-int")
-        $config.WebsitePort.should.be("8888")
-        $config.PhysicalPath.should.be('C:\IIS\MyService-int')
-        $config.AppPoolName.should.be("MyService-int")
-        $config.AppPoolUser.should.be("MyService-int")
-        $config.AppName.should.be("MyService")
+    & $nuget pack "$root\src\nudeploy\nscaffold.nudeploy.nuspec" -Version "1.0" -o $nugetRepo -NoPackageAnalysis
+    $nugetSource = $nugetRepo
+    $nodeDeployRoot = "$TestDrive\deployment_root"
+
+    Install-NuPackage -package "NScaffold.NuDeploy" -workingDir $workingDir -version "1.0" -postInstall {
+        param($packageDir)
+        $nudeployModule = Get-ChildItem $packageDir "nudeploy.psm1" -recurse
+        Import-Module $nudeployModule.FullName -Force
     }
 
-    Function Assert-InstallIsNotExecuted($envConfigFile, $package, $version){
-        $envConfig = & $envConfigFile
-        $packageRoot = "$($envConfig.nodeDeployRoot)\$package\$package.$version"
-        $fileGeneratedByInstall = "$packageRoot\fileGeneratedByInstall.txt"
-        if(Test-Path $fileGeneratedByInstall){
-            throw "expect package[$package] with version[$version] to be NOT installed in $packageRoot, actual is installed"
-        }
-    }
+    & $nuget pack "$fixturesDir\package_source\test_package.nuspec" -NoPackageAnalysis -Version "1.0" -o $nugetRepo
+
     It "should not deploy the package" {
-        Setup-ConfigFixtures
-        ReImport-NudeployModule
-        Publish-NugetPackage "$fixtures\package_source\test_package.nuspec" 1.0 
-        Assert-InstallIsNotExecuted $envConfigFile "Test.Package" "1.0"
-
+        $envConfigFile = "$fixturesDir\config\env.config.ps1"
         [object[]]$appsConfig = Install-NudeployEnv -DryRun $envConfigFile
-        
-        Assert-InstallIsNotExecuted $envConfigFile "Test.Package" "1.0"
+        $packageRoot = "$nodeDeployRoot\Test.Package\Test.Package.1.0"
+        "$packageRoot\fileGeneratedByInstall.txt" | should not exist
     }
 
     It "should stop deployment when exception is thrown when config miss item" {
-        $envConfigFile = "$fixtures\config_miss_config_item\env.config.ps1"
-        Setup-ConfigFixtures
-        ReImport-NudeployModule
-        Publish-NugetPackage "$fixtures\package_source\test_package.nuspec" 1.0 
-
-        try{
-            Install-NudeployEnv $envConfigFile
-            throw "should not be here"
-        }catch{
-            $_.toString().should.be("Missing configuration for PhysicalPath.")
-        }
+        $envConfigFile = "$fixturesDir\config_miss_config_item\env.config.ps1"
+        { Install-NudeployEnv $envConfigFile } | should throw
     }
 
     It "should not deploy packages that have been deployed" {
-        Setup-ConfigFixtures
-        ReImport-NudeployModule
-        Publish-NugetPackage "$fixtures\package_source\test_package.nuspec" 1.0 
-
+        $envConfigFile = "$fixturesDir\config\env.config.ps1"
+        
+        Install-NudeployEnv $envConfigFile        
+        Remove-Item $nodeDeployRoot -recurse
+        mkdir $nodeDeployRoot
         Install-NudeployEnv $envConfigFile
-
-        Remove-InstalledPackages $envConfigFile 
-        Install-NudeployEnv $envConfigFile
-        Assert-PackageNotInstalled $envConfigFile "Test.Package" "1.0"
+        "$nodeDeployRoot\Test.Package\Test.Package.1.0" | should not exist
     }
 }

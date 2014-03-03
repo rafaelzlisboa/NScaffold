@@ -26,10 +26,10 @@ Describe "go.ns.ps1 Compile" {
         Use-Directory $projectDir {
             iex ".\go.ns.ps1 Compile"
         }
-        "$projectDir\src\single-project\bin\Debug\Single.Project.exe".should.exist()
-        "$projectDir\src\multi-project\bin\Debug\Project1\Multi.Project1.exe".should.exist()
-        "$projectDir\src\multi-project\bin\Debug\Project2\Multi.Project2.exe".should.exist()
-        (Test-Path "$projectDir\src\group-project\bin\Debug\Group.Project.exe").should.be($false)
+        "$projectDir\src\single-project\bin\Debug\Single.Project.exe" | should exist
+        "$projectDir\src\multi-project\bin\Debug\Project1\Multi.Project1.exe" | should exist
+        "$projectDir\src\multi-project\bin\Debug\Project2\Multi.Project2.exe" | should exist
+        "$projectDir\src\group-project\bin\Debug\Group.Project.exe" | should not exist
     }
 }
 
@@ -49,15 +49,15 @@ Describe "go.ns.ps1 Package" {
         Use-Directory $projectDir {
             iex ".\go.ns.ps1 Package"
         }
-        "$projectDir\tmp\nupkgs\Single.Project.1.0.0.nupkg".should.exist()
-        "$projectDir\tmp\nupkgs\Multi.Project.1.0.0.nupkg".should.exist()
-        "$projectDir\tmp\nupkgs\Package1.Project.1.0.0.nupkg".should.exist()
-        "$projectDir\tmp\nupkgs\Package2.Project.1.0.0.nupkg".should.exist()
-        "$projectDir\tmp\nupkgs\pkgs.txt".should.exist()
+        "$projectDir\tmp\nupkgs\Single.Project.1.0.0.nupkg" | should exist
+        "$projectDir\tmp\nupkgs\Multi.Project.1.0.0.nupkg" | should exist
+        "$projectDir\tmp\nupkgs\Package1.Project.1.0.0.nupkg" | should exist
+        "$projectDir\tmp\nupkgs\Package2.Project.1.0.0.nupkg" | should exist
+        "$projectDir\tmp\nupkgs\pkgs.txt" | should exist
 
         & $nugetExe install "Package1.Project" -Source "$projectDir\tmp\nupkgs" -OutputDirectory $workingDir -NoCache
-        "$workingDir\Package1.Project.1.0.0\target\Group.Project.exe".should.exist()
+        "$workingDir\Package1.Project.1.0.0\target\Group.Project.exe" | should exist
         & $nugetExe install "Package2.Project" -Source "$projectDir\tmp\nupkgs" -OutputDirectory $workingDir -NoCache
-        "$workingDir\Package2.Project.1.0.0\target\Group.Project.exe".should.exist()
+        "$workingDir\Package2.Project.1.0.0\target\Group.Project.exe" | should exist
     }
 }
