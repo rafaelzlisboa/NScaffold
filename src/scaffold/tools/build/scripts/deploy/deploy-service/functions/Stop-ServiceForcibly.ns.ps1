@@ -2,7 +2,7 @@ Function Stop-ServiceForcibly($name){
     $waitingTimeSpan = New-TimeSpan -Minutes 5
     $service = Get-Service -Name $name -ErrorAction SilentlyContinue
     if ($service){
-        if($service.Status -eq "Started") {
+        if($service.Status -eq "Running") {
             $service.Stop()
         }
         try {
