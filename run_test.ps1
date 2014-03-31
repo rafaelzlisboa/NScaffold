@@ -14,14 +14,17 @@ $Error.clear()
 
 $fixturesDir = "$rootDir\test\test-fixtures"
 
-& Powershell -noprofile -NonInteractive -command {
+$x = & Powershell -noprofile -NonInteractive -command {
     param($pester, $pathPatten, $fixturesDir)
+    write-host "pester: $pester"
     Import-Module $pester
     Invoke-Pester $pathPatten -EnableExit
 } -args $pester, $pathPatten, $fixturesDir
 
+write-host "aaa"
+write-host "$x"
 write-host $LASTEXITCODE
-write-host $Error
+write-host "bbb"
 
 if ($LASTEXITCODE -ne 0) {
     throw "Job run powershell test failed."
