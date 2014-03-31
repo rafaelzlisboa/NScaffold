@@ -14,12 +14,12 @@ $Error.clear()
 
 $fixturesDir = "$rootDir\test\test-fixtures"
 
-write-host "before import"
-Import-Module $pester
-Invoke-Pester $pathPatten -EnableExit
-write-host "after import"
 
-$x = & Powershell -noprofile -NonInteractive -command {
+# Import-Module $pester
+# Invoke-Pester $pathPatten -OutputXml "tmp\test-result.xml" -EnableExit 
+
+
+& Powershell -noprofile -NonInteractive -command {
     param($pester, $pathPatten, $fixturesDir)
     write-host "pester: $pester"
     write-host "before import"
@@ -27,13 +27,7 @@ $x = & Powershell -noprofile -NonInteractive -command {
     write-host "after import, before pester invoke"
     Invoke-Pester $pathPatten -EnableExit
     write-host "after pester invoke"
-} -args $pester, $pathPatten, $fixturesDir
-
-write-host "------------"
-write-host $x
-write-host "------------"
-write-host $LASTEXITCODE
-write-host "------------"
+} -args $pester, $pathPatten, $fixturesDir | Out-Default
 
 if ($LASTEXITCODE -ne 0) {
     throw "Job run powershell test failed."
