@@ -17,14 +17,18 @@ $fixturesDir = "$rootDir\test\test-fixtures"
 $x = & Powershell -noprofile -NonInteractive -command {
     param($pester, $pathPatten, $fixturesDir)
     write-host "pester: $pester"
+    write-host "before import"
     Import-Module $pester
+    write-host "after import, before pester invoke"
     Invoke-Pester $pathPatten -EnableExit
+    write-host "after pester invoke"
 } -args $pester, $pathPatten, $fixturesDir
 
-write-host "aaa"
-write-host "$x"
+write-host "------------"
+write-host $x
+write-host "------------"
 write-host $LASTEXITCODE
-write-host "bbb"
+write-host "------------"
 
 if ($LASTEXITCODE -ne 0) {
     throw "Job run powershell test failed."
