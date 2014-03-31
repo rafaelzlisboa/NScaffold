@@ -14,6 +14,10 @@ $Error.clear()
 
 $fixturesDir = "$rootDir\test\test-fixtures"
 
+write-host "before import"
+Import-Module $pester
+write-host "after import"
+
 $x = & Powershell -noprofile -NonInteractive -command {
     param($pester, $pathPatten, $fixturesDir)
     write-host "pester: $pester"
