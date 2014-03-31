@@ -16,6 +16,7 @@ $fixturesDir = "$rootDir\test\test-fixtures"
 
 write-host "before import"
 Import-Module $pester
+Invoke-Pester $pathPatten -EnableExit
 write-host "after import"
 
 $x = & Powershell -noprofile -NonInteractive -command {
