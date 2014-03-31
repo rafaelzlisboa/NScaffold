@@ -7,7 +7,6 @@ trap {
 }
 
 $nuget = "$rootDir\tools\nuget\nuget.exe"
-# & $nuget install pester -version "2.0.3" -nocache -OutputDirectory "$rootDir\tools"
 $pesterDir = "$rootDir\tools\Pester.2.0.3"
 
 $pester = (Get-ChildItem "$pesterDir" pester.psm1 -recurse).FullName
