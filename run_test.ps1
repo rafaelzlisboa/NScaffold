@@ -7,7 +7,7 @@ trap {
 }
 
 $nuget = "$rootDir\tools\nuget\nuget.exe"
-$pesterDir = "$rootDir\tools\Pester.2.0.3"
+$pesterDir = "$rootDir\tools\Pester.2.0.4"
 
 $pester = (Get-ChildItem "$pesterDir" pester.psm1 -recurse).FullName
 $Error.clear()
