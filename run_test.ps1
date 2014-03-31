@@ -20,6 +20,9 @@ $fixturesDir = "$rootDir\test\test-fixtures"
     Invoke-Pester $pathPatten -EnableExit
 } -args $pester, $pathPatten, $fixturesDir
 
+write-host $LASTEXITCODE
+write-host $Error
+
 if ($LASTEXITCODE -ne 0) {
     throw "Job run powershell test failed."
 }
