@@ -9,7 +9,7 @@ trap {
 $nuget = "$rootDir\tools\nuget\nuget.exe"
 $pesterDir = "$rootDir\tools\Pester.2.0.4"
 
-$pester = (Get-ChildItem "$pesterDir" pester.psm1 -recurse).FullName
+$pesterScript = (Get-ChildItem "$pesterDir" pester.psm1 -recurse).FullName
 $Error.clear()
 
 $fixturesDir = "$rootDir\test\test-fixtures"
@@ -21,13 +21,12 @@ $fixturesDir = "$rootDir\test\test-fixtures"
 
 & Powershell -noprofile -NonInteractive -command {
     param($pester, $pathPatten, $fixturesDir)
-    write-host "pester: $pester"
     write-host "before import"
-    Import-Module $pester
+    Import-Module $pesterScript
     write-host "after import, before pester invoke"
     Invoke-Pester $pathPatten -EnableExit
     write-host "after pester invoke"
-} -args $pester, $pathPatten, $fixturesDir | Out-Default
+} -args $pesterScript, $pathPatten, $fixturesDir | Out-Default
 
 if ($LASTEXITCODE -ne 0) {
     throw "Job run powershell test failed."
