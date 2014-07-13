@@ -40,10 +40,10 @@ $packageInfo = $defaultFeature.packageInfo
 # get config
 if($PsCmdlet.ParameterSetName -eq 'configFile') {
     $config = Import-Config $configFile | 
-        Patch-Config -p (Generate-PackageConfig $packageInfo)
+        Patch-Config -patch (Generate-PackageConfig $packageInfo)
 } elseif ($PsCmdlet.ParameterSetName -eq 'configObject') {
     $config = $configObject | 
-        Patch-Config -p (Generate-PackageConfig $packageInfo)
+        Patch-Config -patch (Generate-PackageConfig $packageInfo)
 } else {
     $config = Generate-PackageConfig $packageInfo
 }
