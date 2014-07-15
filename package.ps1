@@ -11,8 +11,8 @@ if(test-path .\tmp\pkgs\){
 	mkdir .\tmp\pkgs\
 }
 
-if($Env:CRUISE_PIPELINE_COUNTER){
-	$buildNumber = $Env:CRUISE_PIPELINE_COUNTER
+if($Env:GO_PIPELINE_COUNTER){
+	$buildNumber = $Env:GO_PIPELINE_COUNTER
 }else{
 	$buildNumber = 0
 }
