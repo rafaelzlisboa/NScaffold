@@ -15,7 +15,7 @@ $Error.clear()
 $fixturesDir = "$rootDir\test\test-fixtures"
 
 
-Import-Module $pester
+Import-Module $pesterScript
 $result = Invoke-Pester $pathPatten -OutputXml "$rootDir\tmp\test-result.xml" -EnableExit 
 
 write-host $result
