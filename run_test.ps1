@@ -14,12 +14,9 @@ $Error.clear()
 
 $fixturesDir = "$rootDir\test\test-fixtures"
 
+mkdir -Force "$rootDir\tmp"
+powershell -Command "Import-Module $pesterScript; Invoke-Pester $pathPatten -OutputXml '$rootDir\tmp\test-result.xml' -EnableExit"
 
-Import-Module $pesterScript
-$result = Invoke-Pester $pathPatten -OutputXml "$rootDir\tmp\test-result.xml" -EnableExit 
-
-write-host $result
-write-host $result.FailedCount
 
 # & Powershell -noprofile -NonInteractive -command {
 #     param($pester, $pathPatten, $fixturesDir)
