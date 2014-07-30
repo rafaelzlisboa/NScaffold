@@ -6,7 +6,7 @@ $here = $MyInvocation.MyCommand.Path | Split-Path -Parent
 $webSiteName = $config.siteName
 
 if(-not $loadBalancerPollingDurationInSeconds){
-    $loadBalancerPollingDurationInSeconds = 30
+    $loadBalancerPollingDurationInSeconds = 0
 }
 
 try{
