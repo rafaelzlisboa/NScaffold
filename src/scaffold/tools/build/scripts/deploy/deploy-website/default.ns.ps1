@@ -30,20 +30,14 @@ $packageInfo.Add("sourcePath", $sourcePath)
             throw "Website [$webSitePath] does not exists!"
         }
 
-        $tempDir = "$($env:temp)\$((Get-Date).Ticks)"
-        New-Item $tempDir -type Directory | Out-Default
-        Set-ItemProperty $webSitePath physicalPath $tempDir
+        Stop-WebSiteDo $webSiteName {
+            if($sourcePath -ne $physicalPath){
+                Clear-Directory $physicalPath | Out-Null
+                Copy-Item "$sourcePath\*" -Destination $physicalPath -Recurse
+            }    
+            Set-ItemProperty $webSitePath physicalPath $physicalPath
+        }
         Write-Host "Website [$webSiteName] is ready."
-        SLEEP -second 2
-
-        if($sourcePath -ne $physicalPath){
-            Clear-Directory $physicalPath | Out-Null
-            Copy-Item "$sourcePath\*" -Destination $physicalPath -Recurse
-        }    
-        Set-ItemProperty $webSitePath physicalPath $physicalPath
-        Start-Website $webSiteName
-        SLEEP -second 2
-        Remove-Item $tempDir -Force -Recurse -ErrorAction SilentlyContinue | Out-Default
     }
     'export' = {
         param($config, $packageInfo, $installArgs)

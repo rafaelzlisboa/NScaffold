@@ -18,8 +18,6 @@ try{
     }
     & $installAction
     Add-ToLoadBalancer $websiteName
-    $pool = (Get-Item "IIS:\Sites\$webSiteName"| Select-Object applicationPool).applicationPool
-    Restart-WebAppPool $pool
     Assert-AddedToLoadBalancer $websiteName
     Trace-ProgressMsg "Wait $loadBalancerPollingDurationInSeconds second(s) for load balancer to pick up website[$websiteName]..."
     Start-Sleep -Seconds $loadBalancerPollingDurationInSeconds
