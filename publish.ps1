@@ -12,7 +12,7 @@ Function Publish-Package($packageFileName, $repoPath){
 		throw "package file not found $sourceFilePath"
 	}
 	if(Test-Path $destFilePath){
-		throw "Package[$packageFileName] already existed in repository[$repoPath]"
+		Write-Error "Package[$packageFileName] already existed in repository[$repoPath]"
 	}
 	Write-Host "Copy-Item $sourceFilePath $destFilePath"
 	Copy-Item $sourceFilePath $destFilePath
