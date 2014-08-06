@@ -3,12 +3,13 @@ Function Install-NuDeployEnv{
        [Parameter(Mandatory=$true, Position=0)][string] $envPath,
        [string] $versionSpec,
        [string] $nugetRepoSource,
+       [string] $hostName = "",
        [switch] $DryRun
     )
     Log-Progress "Start Install-NuDeployEnv"
     $envConfig = Get-DesiredEnvConfig $envPath $nugetRepoSource $versionSpec
-    Initialize-Nodes $envConfig | Out-Default
-    Deploy-Env $envConfig $dryRun
+    Initialize-Nodes $envConfig $hostName | Out-Default
+    Deploy-Env $envConfig $hostName $dryRun
 }
 
 Function Get-EnvConfigFilePath($envPath){
@@ -82,13 +83,19 @@ Function Assert-AppConfigs($envConfig) {
     }
 }
 
-Function Deploy-Env($envConfig, $dryRun) {
+Function Deploy-Env($envConfig, $hostName, $dryRun) {
     $envConfig.apps | % { $_.env = $envConfig.variables.ENV }
     $envConfig.apps | % { $_.exports = Load-LastMatchingDeploymentResult $envConfig.deploymentHistoryFolder $_ }
    
     $tobeDeployApps = $envConfig.apps | ? { ($_.features -contains "forceRedeploy") -or (-not $_.exports) }
+
     $envConfig.apps | ? { -not ($tobeDeployApps -contains $_) } | %{
         Write-Host "package [$($_.package)] version [$($_.version)] on node [$($_.server)] with config [$($_.config)] of environment[$($_.env)] has ALREADY been deployed. Skip deployment" -f cyan
+    }
+
+    if (-Not [string]::IsNullOrEmpty($hostName)) {
+        $tobeDeployApps = $tobeDeployApps | ? { ($_.server -eq $hostName) }
+        Write-Host "Only deploy on host $hostName, reducing app count to $($envConfig.apps.length) -> $($tobeDeployApps.length)"
     }
 
     if($tobeDeployApps){

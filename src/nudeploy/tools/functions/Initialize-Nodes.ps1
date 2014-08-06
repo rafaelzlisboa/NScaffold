@@ -1,6 +1,11 @@
 
-Function Initialize-Nodes($envConfig){
+Function Initialize-Nodes($envConfig, $hostName){
     $targetNodes = $envConfig.apps | % { $_.server } | Sort | Get-Unique
+
+    if (-Not [string]::IsNullOrEmpty($hostName)) {
+        $targetNodes = @($hostName)
+    }
+
     Add-HostAsTrusted $targetNodes
     $targetNodes | % { Setup-NuDeployRemotely $_ $envConfig.nodeDeployRoot} | Out-Default
 }
