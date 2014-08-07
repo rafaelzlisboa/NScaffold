@@ -9,10 +9,6 @@ Function Reset-AppPool($appPoolName, $username, $password, $loadUserProfile){
     } else{
         if((-not (Test-IsDomain)) -and (-not (Test-User $username))){
             $user = New-LocalUser $username $password | Out-Null
-            # set password to "Never Expires"
-            $ADS_UF_DONT_EXPIRE_PASSWD = 0x10000
-            $user.userflags = $user.userflags[0] -bor $ADS_UF_DONT_EXPIRE_PASSWD
-            $user.SetInfo()
             
             Set-LocalGroup $username "IIS_IUSRS" -add
         }
