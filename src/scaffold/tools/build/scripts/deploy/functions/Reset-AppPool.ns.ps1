@@ -8,7 +8,7 @@ Function Reset-AppPool($appPoolName, $username, $password, $loadUserProfile){
         Set-ItemProperty $appPoolPath ProcessModel.IdentityType 4
     } else{
         if((-not (Test-IsDomain)) -and (-not (Test-User $username))){
-            $user = New-LocalUser $username $password | Out-Null
+            New-LocalUser $username $password | Out-Null
             
             Set-LocalGroup $username "IIS_IUSRS" -add
         }
