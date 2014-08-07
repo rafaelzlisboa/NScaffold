@@ -8,7 +8,12 @@ Function Reset-AppPool($appPoolName, $username, $password, $loadUserProfile){
         Set-ItemProperty $appPoolPath ProcessModel.IdentityType 4
     } else{
         if((-not (Test-IsDomain)) -and (-not (Test-User $username))){
-            New-LocalUser $username $password | Out-Null
+            $user = New-LocalUser $username $password | Out-Null
+            # set password to "Never Expires"
+            $ADS_UF_DONT_EXPIRE_PASSWD = 0x10000
+            $user.userflags = $user.userflags[0] -bor $ADS_UF_DONT_EXPIRE_PASSWD
+            $user.SetInfo()
+            
             Set-LocalGroup $username "IIS_IUSRS" -add
         }
         Write-Host "User [$username] is ready."

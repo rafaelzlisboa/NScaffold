@@ -55,6 +55,7 @@ Function New-LocalUser
  $user.put("PasswordExpired", 0) 
  $user.UserFlags.value = $user.UserFlags.value -bor 0x10000
  $user.SetInfo() 
+ return $user
 } #end function New-LocalUser 
  
 Function New-LocalGroup 
