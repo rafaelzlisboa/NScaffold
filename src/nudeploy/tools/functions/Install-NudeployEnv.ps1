@@ -103,10 +103,12 @@ Function Deploy-Env($envConfig, $hostName, $dryRun) {
         Assert-PackagesInRepo $envConfig.nugetRepo $tobeDeployApps
         Log-Progress "End Assert-PackagesInRepo"
 
-        $tobeDeployApps | % { $_.exports = Deploy-App $_ $envConfig $dryRun} 
-        if(-not $dryRun){
-            $tobeDeployApps | %{ Save-LastDeploymentResult $envConfig.deploymentHistoryFolder $_ $_.exports }
-        }
+        $tobeDeployApps | % {
+            $_.exports = Deploy-App $_ $envConfig $dryRun
+            if(-not $dryRun){
+                Save-LastDeploymentResult $envConfig.deploymentHistoryFolder $_ $_.exports
+            }
+        } 
     }
     , $envConfig.apps
 }
